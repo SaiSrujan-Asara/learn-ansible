@@ -1,0 +1,6 @@
+---
+- name: Setup Tomcat 8
+  hosts: local
+  become: yes
+  roles:
+    - tomcat

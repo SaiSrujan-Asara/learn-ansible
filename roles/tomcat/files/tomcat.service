@@ -1,0 +1,17 @@
+[Unit]
+Description=Apache Tomcat 8 Web Application Container
+After=network.target
+
+[Service]
+Type=forking
+User=tomcat
+Group=tomcat
+Environment="CATALINA_PID=/opt/tomcat8/tomcat.pid"
+Environment="CATALINA_HOME=/opt/tomcat8"
+Environment="CATALINA_OPTS=-Xms512M -Xmx1024M -server -XX:+UseParallelGC"
+ExecStart=/opt/tomcat8/bin/startup.sh
+ExecStop=/opt/tomcat8/bin/shutdown.sh
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
