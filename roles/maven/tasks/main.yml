@@ -1,0 +1,59 @@
+---
+- name: Install Java
+  apt:
+    name: default-jdk
+    state: present
+    update_cache: yes
+
+- name: Create Maven directory
+  file:
+    path: /opt/maven
+    state: directory
+    mode: '0755'
+
+- name: Download Apache Maven
+  get_url:
+    url: "{{ maven_download_url }}"
+    dest: "/tmp/apache-maven-{{ maven_version }}-bin.tar.gz"
+    mode: '0644'
+
+- name: Extract Maven to /opt
+  unarchive:
+    src: "/tmp/apache-maven-{{ maven_version }}-bin.tar.gz"
+    dest: "/opt/maven"
+    remote_src: yes
+    creates: "/opt/maven/apache-maven-{{ maven_version }}/bin/mvn"
+
+- name: Create symlink for Maven
+  file:
+    src: "/opt/maven/apache-maven-{{ maven_version }}"
+    dest: "/opt/maven/latest"
+    state: link
+
+- name: Setup Maven environment variables
+  lineinfile:
+    path: /etc/profile.d/maven.sh
+    line: 'export MAVEN_HOME=/opt/maven/latest'
+    create: yes
+
+- name: Setup PATH for Maven
+  lineinfile:
+    path: /etc/profile.d/maven.sh
+    line: 'export PATH=$MAVEN_HOME/bin:$PATH'
+    create: yes
+
+- name: Ensure environment variables script is executable
+  file:
+    path: /etc/profile.d/maven.sh
+    mode: '0755'
+
+- name: Check Maven version
+  shell: |
+    . /etc/profile.d/maven.sh
+    mvn -version
+  register: maven_check
+  changed_when: false
+
+- name: Display Maven version
+  debug:
+    msg: "{{ maven_check.stdout }}"
