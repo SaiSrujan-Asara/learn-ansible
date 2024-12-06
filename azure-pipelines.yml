@@ -1,12 +1,10 @@
 trigger:
   branches:
     include:
-      - main  # Trigger on changes to the 'main' branch (adjust as necessary)
+      - main
 
 pool:
-  name: Default  # Use the 'Default' agent pool
-  demands:
-    - agent.name -equals test  # Use the self-hosted agent named 'test'
+  name: Default  
 
 steps:
 - script: echo Hello, world!
